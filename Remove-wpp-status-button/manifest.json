@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Remove Whatsapp Web Status Button",
-  "description": "Simple extension to remove Whatsapp Web Status Button.",
-  "version": "1.0",
+  "name": "Remove wpp Web Status Button - UNOFFICIAL",
+  "description": "Simple extension to remove wpp Web Status Button.",
+  "version": "1.1",
   "icons": {
     "16": "/Icons/icon-16.png",
     "48": "/Icons/icon-48.png",
