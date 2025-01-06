@@ -1,5 +1,5 @@
 /**
- * Remove wpp Web Status Button V-1.1
+ * Remove wpp Web Status Button V-2.0
 
 Have you ever notices how you can mute someone' wpp statuses on the phone, but cannot do the same on the Web version?
 
@@ -16,10 +16,11 @@ let observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     // If no new nodes were added, return.
     if (!mutation.addedNodes) return;
-    let statusButton = document.querySelector('div[title="Status"]');
+    let statusButton = document.querySelector('span[data-icon="status-outline"]');
     // Else if now the Status Button exists, set it's display to none and end the observer.
     if (statusButton != null) {
-      statusButton.style.display = 'none';
+      const parentDiv = statusButton.parentElement.parentElement.parentElement;
+      parentDiv.style.display = 'none';
       observer.disconnect();
     }
   });
