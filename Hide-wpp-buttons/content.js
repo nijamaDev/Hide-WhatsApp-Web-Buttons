@@ -1,5 +1,10 @@
+//const browserAPI = Storage || window.chrome;
+if (typeof browser === "undefined") {
+  var browser = chrome;
+}
+
 // Default settings
-chrome.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (result) => {
+browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (result) => {
   let hideStatus = result.hideStatus ?? true;
   let hideChannels = result.hideChannels ?? true;
   let hideCommunity = result.hideCommunity ?? true;
@@ -20,7 +25,7 @@ chrome.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (result
   updateButtonVisibility(hideStatus, hideChannels, hideCommunity);
 
   // Listen for messages from the popup and adjust behavior
-  chrome.runtime.onMessage.addListener((message) => {
+  browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
       hideStatus = message.hide;
       updateSpecificButton('span[data-icon="status-outline"]', hideStatus);
