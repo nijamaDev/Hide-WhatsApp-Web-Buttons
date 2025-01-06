@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Remove WPP Web Buttons - UNOFFICIAL",
-  "description": "A simple extension to hide WhatsApp Web's buttons (Status and Channels).",
+  "name": "Hide WPP Web Buttons - UNOFFICIAL",
+  "description": "A simple extension to hide WhatsApp Web's buttons (Status, Channels and Communities).",
   "version": "3.0",
   "icons": {
     "16": "/Icons/icon-16.png",
