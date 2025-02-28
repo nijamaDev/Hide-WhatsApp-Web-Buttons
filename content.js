@@ -66,4 +66,15 @@ function updateSpecificButton(selector, shouldHide) {
       parentDiv.style.display = shouldHide ? 'none' : 'block';
     }
   }
+
+  // Additional functionality to hide all <svg> elements with <circle fill="none"> when hideStatus is true
+  if (selector === 'span[data-icon="status-outline"]') {
+    const svgElements = document.querySelectorAll('svg > circle[fill="none"]');
+    svgElements.forEach(circle => {
+      const svgElement = circle.parentElement;
+      if (svgElement) {
+        svgElement.style.display = shouldHide ? 'none' : 'block';
+      }
+    });
+  }
 }
