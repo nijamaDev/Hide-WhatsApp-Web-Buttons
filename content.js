@@ -4,14 +4,15 @@ if (typeof browser === "undefined") {
 }
 
 // Default settings
-browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (result) => {
+browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta'], (result) => {
   let hideStatus = result.hideStatus ?? true;
   let hideChannels = result.hideChannels ?? true;
   let hideCommunity = result.hideCommunity ?? true;
+  let hideMeta = result.hideMeta ?? true;
 
   // Observer to handle dynamic DOM changes
   let observer = new MutationObserver(() => {
-    updateButtonVisibility(hideStatus, hideChannels, hideCommunity);
+    updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
   });
 
   observer.observe(document.body, {
@@ -22,44 +23,42 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (resul
   });
 
   // Initial visibility update
-  updateButtonVisibility(hideStatus, hideChannels, hideCommunity);
+  updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
 
   // Listen for messages from the popup and adjust behavior
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
       hideStatus = message.hide;
-      updateSpecificButton('span[data-icon="status-outline"]', hideStatus);
+      updateSpecificButton('button[aria-label="Status"]', hideStatus);
     }
     if (message.action === 'toggleChannels') {
       hideChannels = message.hide;
-      updateSpecificButton('span[data-icon="newsletter-outline"]', hideChannels);
+      updateSpecificButton('button[aria-label="Channels"]', hideChannels);
     }
     if (message.action === 'toggleCommunity') {
       hideCommunity = message.hide;
-      updateSpecificButton('span[data-icon="community-outline"]', hideCommunity);
+      updateSpecificButton('button[aria-label="Communities"]', hideCommunity);
+    }
+    if (message.action === 'toggleMeta') {
+      hideMeta = message.hide;
+      updateSpecificButton('button[aria-label="Meta AI"]', hideMeta);
     }
   });
 });
 
-// Update the visibility of all buttons
-function updateButtonVisibility(hideStatus, hideChannels, hideCommunity) {
-  updateSpecificButton('span[data-icon="status-outline"]', hideStatus);
-  updateSpecificButton('span[data-icon="newsletter-outline"]', hideChannels);
-  updateSpecificButton('span[data-icon="community-outline"]', hideCommunity);
+// * Update the visibility of all buttons
+function updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta) {
+  updateSpecificButton('button[aria-label="Status"]', hideStatus);
+  updateSpecificButton('button[aria-label="Channels"]', hideChannels);
+  updateSpecificButton('button[aria-label="Communities"]', hideCommunity);
+  updateSpecificButton('button[aria-label="Meta AI"]', hideMeta);
 }
 
-// Dynamically handle parent traversal and update visibility
+// * Dynamically handle parent and update visibility
 function updateSpecificButton(selector, shouldHide) {
   const button = document.querySelector(selector);
   if (button) {
     let parentDiv = button.parentElement;
-
-    // Check if the parent is a button or div and adjust traversal depth
-    if (parentDiv?.tagName.toLowerCase() === 'button') {
-      parentDiv = parentDiv.parentElement; // Only requires 2 traversals
-    } else {
-      parentDiv = parentDiv?.parentElement?.parentElement; // Requires 3 traversals
-    }
 
     // Update visibility dynamically
     if (parentDiv) {
@@ -67,7 +66,7 @@ function updateSpecificButton(selector, shouldHide) {
     }
   }
 
-  // Additional functionality to hide all <svg> elements with <circle fill="none"> when hideStatus is true
+  // * Additional functionality to hide all <svg> elements with <circle fill="none"> when hideStatus is true
   if (selector === 'span[data-icon="status-outline"]') {
     const svgElements = document.querySelectorAll('svg > circle[fill="none"]');
     svgElements.forEach(circle => {

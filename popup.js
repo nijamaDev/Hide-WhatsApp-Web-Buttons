@@ -6,12 +6,14 @@ if (typeof browser === "undefined") {
 const toggleStatus = document.getElementById('toggle-status');
 const toggleChannels = document.getElementById('toggle-channels');
 const toggleCommunity = document.getElementById('toggle-community');
+const toggleMeta = document.getElementById('toggle-meta');
 
 // Load settings from storage and set toggles accordingly
-browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity'], (result) => {
+browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta'], (result) => {
   toggleStatus.checked = result.hideStatus ?? true;
   toggleChannels.checked = result.hideChannels ?? true;
   toggleCommunity.checked = result.hideCommunity ?? true;
+  toggleMeta.checked = result.hideMeta ?? true;
 });
 
 // Update storage and notify the content script when toggles change
@@ -31,6 +33,12 @@ toggleCommunity.addEventListener('change', () => {
   const shouldHideCommunity = toggleCommunity.checked;
   browser.storage.sync.set({ hideCommunity: shouldHideCommunity });
   notifyContentScript({ action: 'toggleCommunity', hide: shouldHideCommunity });
+});
+
+toggleMeta.addEventListener('change', () => {
+  const shouldHideMeta = toggleMeta.checked;
+  browser.storage.sync.set({ hideMeta: shouldHideMeta });
+  notifyContentScript({ action: 'toggleMeta', hide: shouldHideMeta });
 });
 
 // Function to send messages to the content script
