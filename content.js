@@ -1,16 +1,20 @@
-//const browserAPI = Storage || window.chrome;
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
+const querySelectorStatus = 'button[aria-label="Status"]';
+const querySelectorStatusChatCircles = 'svg > circle[fill="none"]';
+const querySelectorChannels = 'button[aria-label="Channels"]';
+const querySelectorCommunity = 'button[aria-label="Communities"]';
+const querySelectorMeta = 'button[aria-label="Meta AI"]';
 
-// Default settings
+// * Default settings
 browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta'], (result) => {
   let hideStatus = result.hideStatus ?? true;
   let hideChannels = result.hideChannels ?? true;
   let hideCommunity = result.hideCommunity ?? true;
   let hideMeta = result.hideMeta ?? true;
 
-  // Observer to handle dynamic DOM changes
+  // * Observer to handle dynamic DOM changes
   let observer = new MutationObserver(() => {
     updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
   });
@@ -22,36 +26,36 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
     characterData: false,
   });
 
-  // Initial visibility update
+  // * Initial visibility update
   updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
 
-  // Listen for messages from the popup and adjust behavior
+  // * Listen for messages from the popup and adjust behavior
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
       hideStatus = message.hide;
-      updateSpecificButton('button[aria-label="Status"]', hideStatus);
+      updateSpecificButton(querySelectorStatus, hideStatus);
     }
     if (message.action === 'toggleChannels') {
       hideChannels = message.hide;
-      updateSpecificButton('button[aria-label="Channels"]', hideChannels);
+      updateSpecificButton(querySelectorChannels, hideChannels);
     }
     if (message.action === 'toggleCommunity') {
       hideCommunity = message.hide;
-      updateSpecificButton('button[aria-label="Communities"]', hideCommunity);
+      updateSpecificButton(querySelectorCommunity, hideCommunity);
     }
     if (message.action === 'toggleMeta') {
       hideMeta = message.hide;
-      updateSpecificButton('button[aria-label="Meta AI"]', hideMeta);
+      updateSpecificButton(querySelectorMeta, hideMeta);
     }
   });
 });
 
 // * Update the visibility of all buttons
 function updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta) {
-  updateSpecificButton('button[aria-label="Status"]', hideStatus);
-  updateSpecificButton('button[aria-label="Channels"]', hideChannels);
-  updateSpecificButton('button[aria-label="Communities"]', hideCommunity);
-  updateSpecificButton('button[aria-label="Meta AI"]', hideMeta);
+  updateSpecificButton(querySelectorStatus, hideStatus);
+  updateSpecificButton(querySelectorChannels, hideChannels);
+  updateSpecificButton(querySelectorCommunity, hideCommunity);
+  updateSpecificButton(querySelectorMeta, hideMeta);
 }
 
 // * Dynamically handle parent and update visibility
@@ -67,8 +71,8 @@ function updateSpecificButton(selector, shouldHide) {
   }
 
   // * Additional functionality to hide all <svg> elements with <circle fill="none"> when hideStatus is true
-  if (selector === 'span[data-icon="status-outline"]') {
-    const svgElements = document.querySelectorAll('svg > circle[fill="none"]');
+  if (selector === querySelectorStatus) {
+    const svgElements = document.querySelectorAll(querySelectorStatusChatCircles);
     svgElements.forEach(circle => {
       const svgElement = circle.parentElement;
       if (svgElement) {

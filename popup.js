@@ -2,13 +2,13 @@ if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
-// Get references to the toggle checkboxes
+// * Get references to the toggle checkboxes
 const toggleStatus = document.getElementById('toggle-status');
 const toggleChannels = document.getElementById('toggle-channels');
 const toggleCommunity = document.getElementById('toggle-community');
 const toggleMeta = document.getElementById('toggle-meta');
 
-// Load settings from storage and set toggles accordingly
+// * Load settings from storage and set toggles accordingly
 browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta'], (result) => {
   toggleStatus.checked = result.hideStatus ?? true;
   toggleChannels.checked = result.hideChannels ?? true;
@@ -16,7 +16,7 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
   toggleMeta.checked = result.hideMeta ?? true;
 });
 
-// Update storage and notify the content script when toggles change
+// * Update storage and notify the content script when toggles change
 toggleStatus.addEventListener('change', () => {
   const shouldHideStatus = toggleStatus.checked;
   browser.storage.sync.set({ hideStatus: shouldHideStatus });
@@ -41,7 +41,7 @@ toggleMeta.addEventListener('change', () => {
   notifyContentScript({ action: 'toggleMeta', hide: shouldHideMeta });
 });
 
-// Function to send messages to the content script
+// * Function to send messages to the content script
 function notifyContentScript(message) {
   browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0]?.id) {
