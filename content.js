@@ -1,10 +1,13 @@
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
-const querySelectorStatus = 'button[aria-label="Status"]';
+const querySelectorStatus = 'span[data-icon="status-outline"]';
+const querySelectorStatusNew = 'span[data-icon="status-refreshed"]';
 const querySelectorStatusChatCircles = 'svg > circle[fill="none"]';
-const querySelectorChannels = 'button[aria-label="Channels"]';
-const querySelectorCommunity = 'button[aria-label="Communities"]';
+const querySelectorChannels = 'span[data-icon="newsletter-outline"]';
+const querySelectorCommunity = 'span[data-icon="community-outline"]';
+const querySelectorCommunityNew = 'span[data-icon="community-refreshed-32"]';
+
 const querySelectorMeta = 'button[aria-label="Meta AI"]';
 
 // * Default settings
@@ -34,6 +37,7 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
     if (message.action === 'toggleStatus') {
       hideStatus = message.hide;
       updateSpecificButton(querySelectorStatus, hideStatus);
+      updateSpecificButton(querySelectorStatusNew, hideStatus);
     }
     if (message.action === 'toggleChannels') {
       hideChannels = message.hide;
@@ -42,6 +46,7 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
     if (message.action === 'toggleCommunity') {
       hideCommunity = message.hide;
       updateSpecificButton(querySelectorCommunity, hideCommunity);
+      updateSpecificButton(querySelectorCommunityNew, hideCommunity);
     }
     if (message.action === 'toggleMeta') {
       hideMeta = message.hide;
@@ -53,20 +58,31 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
 // * Update the visibility of all buttons
 function updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta) {
   updateSpecificButton(querySelectorStatus, hideStatus);
+  updateSpecificButton(querySelectorStatusNew, hideStatus);
   updateSpecificButton(querySelectorChannels, hideChannels);
   updateSpecificButton(querySelectorCommunity, hideCommunity);
+  updateSpecificButton(querySelectorCommunityNew, hideCommunity);
   updateSpecificButton(querySelectorMeta, hideMeta);
 }
 
 // * Dynamically handle parent and update visibility
 function updateSpecificButton(selector, shouldHide) {
-  const button = document.querySelector(selector);
-  if (button) {
-    let parentDiv = button.parentElement;
-
-    // Update visibility dynamically
-    if (parentDiv) {
-      parentDiv.style.display = shouldHide ? 'none' : 'block';
+  const element = document.querySelector(selector);
+  console.log(selector)
+  console.log(element)
+  if (element) {
+    // Find the first button parent
+    let currentElement = element;
+    while (currentElement.parentElement) {
+      currentElement = currentElement.parentElement;
+      // console.log(currentElement);
+      if (currentElement.tagName.toLowerCase() === 'button') {
+        // Found the button parent, hide/show its parent
+        if (currentElement.parentElement) {
+          currentElement.parentElement.style.display = shouldHide ? 'none' : 'block';
+        }
+        break;
+      }
     }
   }
 
