@@ -5,87 +5,56 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      padding: 10px;
       margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
       width: 300px;
-      background-color: #202c33; /* Dark WhatsApp background */
-      color: #d1d7db; /* Subtle white-gray text */
+      background-color: #202c33;
+      color: #d1d7db;
     }
     .card {
-      background-color: #111b21; /* Dark card color */
+      background-color: #111b21;
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       padding: 15px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      width: 90%;
     }
     h3 {
-      color: #e9edef; /* Slightly bolder white for the heading */
+      color: #e9edef;
       font-size: 18px;
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
-    .switch-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 12px;
-      border: 1px solid #2a3942;
-      border-radius: 8px;
-      transition: background-color 0.3s, border-color 0.3s;
-      background-color: #202c33;
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
-    .switch-row:hover {
-      background-color: #2a3942; /* Lighter hover effect color */
-      border-color: #2a3942;
-    }
-    /* Slider toggle wrapper */
-    .toggle {
+    .quick-setting {
       position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 20px;
+      padding: 15px 10px;
+      border-radius: 15px;
+      background-color: #202c33;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s;
+      border: none;
+      color: #d1d7db;
+      font-weight: bold;
+      font-size: 0.9em;
     }
-    /* Hide the checkbox (we'll style the switch) */
-    .toggle input {
+    .quick-setting:hover {
+      background-color: #2a3942;
+    }
+    .quick-setting.active {
+      background-color: #187A46;
+      color: white;
+    }
+    /* Hide the original checkbox but keep it accessible */
+    .quick-setting input {
+      position: absolute;
       opacity: 0;
       width: 0;
       height: 0;
-    }
-    /* The slider itself */
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #495057; /* Neutral 'off' color */
-      border-radius: 20px;
-      transition: background-color 0.4s;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white; /* Switch knob */
-      border-radius: 50%;
-      transition: 0.4s;
-    }
-    input:checked + .slider {
-      background-color: #00a884; /* WhatsApp green for "ON" state */
-    }
-    input:checked + .slider:before {
-      transform: translateX(20px); /* Move the knob when ON */
     }
     footer {
       margin-top: 10px;
@@ -107,65 +76,68 @@
       background-color: #2a3942; 
       text-decoration: underline; /* Optional: Adds underline on hover */
     }
+    .section-divider {
+      margin: 20px 0;
+      text-align: center;
+      color: #72858d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
+    .section-divider::before,
+    .section-divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #72858d;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h3>WhatsApp Button Visibility</h3>
-
-    <div class="switch-row">
-      <span>
-        <strong>
-          Hide "Status" Button
-        </strong>
-      </span>
-      <label class="toggle">
+    <h3>Hide WhatsApp Buttons</h3>
+    
+    <div class="buttons-grid">
+      <label class="quick-setting">
         <input type="checkbox" id="toggle-status">
-        <span class="slider"></span>
+        Status
       </label>
-    </div>
-
-    <div class="switch-row">
-      <span>
-        <strong>
-          Hide "Channels" Button
-        </strong>
-      </span>
-      <label class="toggle">
+      
+      <label class="quick-setting">
         <input type="checkbox" id="toggle-channels">
-        <span class="slider"></span>
+        Channels
       </label>
-    </div>
-
-    <div class="switch-row">
-      <span>
-        <strong>
-          Hide "Communities" Button
-        </strong>
-      </span>
-      <label class="toggle">
+      
+      <label class="quick-setting">
         <input type="checkbox" id="toggle-community">
-        <span class="slider"></span>
+        Communities
       </label>
-    </div>
-
-    <div class="switch-row">
-      <span>
-        <strong>
-          Hide "Meta AI" Button
-        </strong>
-      </span>
-      <label class="toggle">
+      
+      <label class="quick-setting">
         <input type="checkbox" id="toggle-meta">
-        <span class="slider"></span>
+        Meta AI
       </label>
     </div>
-
+    
+    <div class="section-divider">Business</div>
+    
+    <div class="buttons-grid">
+      <label class="quick-setting">
+        <input type="checkbox" id="toggle-advertise">
+        Advertise
+      </label>
+      
+      <label class="quick-setting">
+        <input type="checkbox" id="toggle-tools">
+        Tools
+      </label>
+    </div>
   </div>
 
   <footer>
     Extension by <strong>nijamaDev</strong>
+    <br /><br />
+    <a href="https://www.buymeacoffee.com/nijamadev"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=nijamadev&button_colour=111b21&font_colour=FFFFFF&font_family=Inter&outline_colour=FFFFFF&coffee_colour=FF5500" /></a>
     <br /><br />
     <span>
       <strong>
