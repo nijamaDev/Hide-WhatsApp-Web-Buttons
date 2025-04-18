@@ -1,22 +1,29 @@
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
-const querySelectorStatus = 'button[aria-label="Status"]';
+const querySelectorStatus = 'span[data-icon="status-outline"]';
+const querySelectorStatusNew = 'span[data-icon="status-refreshed"]';
 const querySelectorStatusChatCircles = 'svg > circle[fill="none"]';
-const querySelectorChannels = 'button[aria-label="Channels"]';
-const querySelectorCommunity = 'button[aria-label="Communities"]';
+const querySelectorChannels = 'span[data-icon="newsletter-outline"]';
+const querySelectorCommunity = 'span[data-icon="community-outline"]';
+const querySelectorCommunityNew = 'span[data-icon="community-refreshed-32"]';
 const querySelectorMeta = 'button[aria-label="Meta AI"]';
+const querySelectorAdvertise = 'span[data-icon="business-advertise-outline"]';
+const querySelectorTools = 'span[data-icon="business-tools-outline"]';
 
-// * Default settings
-browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta'], (result) => {
-  let hideStatus = result.hideStatus ?? true;
-  let hideChannels = result.hideChannels ?? true;
-  let hideCommunity = result.hideCommunity ?? true;
-  let hideMeta = result.hideMeta ?? true;
+// * Load settings
+// * Temporary fix for migrating from the previous version
+browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMeta', 'showAdvertise', 'showTools'], (result) => {
+  let showStatus = result.showStatus ?? false;
+  let showChannels = result.showChannels ?? false;
+  let showCommunity = result.showCommunity ?? false;
+  let showMeta = result.showMeta ?? false;
+  let showAdvertise = result.showAdvertise ?? true;
+  let showTools = result.showTools ?? true;
 
   // * Observer to handle dynamic DOM changes
   let observer = new MutationObserver(() => {
-    updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
+    updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools);
   });
 
   observer.observe(document.body, {
@@ -27,56 +34,76 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
   });
 
   // * Initial visibility update
-  updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta);
+  updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools);
 
   // * Listen for messages from the popup and adjust behavior
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
-      hideStatus = message.hide;
-      updateSpecificButton(querySelectorStatus, hideStatus);
+      showStatus = message.show;
+      updateSpecificButton(querySelectorStatus, showStatus);
+      updateSpecificButton(querySelectorStatusNew, showStatus);
     }
     if (message.action === 'toggleChannels') {
-      hideChannels = message.hide;
-      updateSpecificButton(querySelectorChannels, hideChannels);
+      showChannels = message.show;
+      updateSpecificButton(querySelectorChannels, showChannels);
     }
     if (message.action === 'toggleCommunity') {
-      hideCommunity = message.hide;
-      updateSpecificButton(querySelectorCommunity, hideCommunity);
+      showCommunity = message.show;
+      updateSpecificButton(querySelectorCommunity, showCommunity);
+      updateSpecificButton(querySelectorCommunityNew, showCommunity);
     }
     if (message.action === 'toggleMeta') {
-      hideMeta = message.hide;
-      updateSpecificButton(querySelectorMeta, hideMeta);
+      showMeta = message.show;
+      updateSpecificButton(querySelectorMeta, showMeta);
+    }
+    if (message.action === 'toggleAdvertise') {
+      showAdvertise = message.show;
+      updateSpecificButton(querySelectorAdvertise, showAdvertise);
+    }
+    if (message.action === 'toggleTools') {
+      showTools = message.show;
+      updateSpecificButton(querySelectorTools, showTools);
     }
   });
 });
 
 // * Update the visibility of all buttons
-function updateButtonVisibility(hideStatus, hideChannels, hideCommunity, hideMeta) {
-  updateSpecificButton(querySelectorStatus, hideStatus);
-  updateSpecificButton(querySelectorChannels, hideChannels);
-  updateSpecificButton(querySelectorCommunity, hideCommunity);
-  updateSpecificButton(querySelectorMeta, hideMeta);
+function updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools) {
+  updateSpecificButton(querySelectorStatus, showStatus);
+  updateSpecificButton(querySelectorStatusNew, showStatus);
+  updateSpecificButton(querySelectorChannels, showChannels);
+  updateSpecificButton(querySelectorCommunity, showCommunity);
+  updateSpecificButton(querySelectorCommunityNew, showCommunity);
+  updateSpecificButton(querySelectorMeta, showMeta);
+  updateSpecificButton(querySelectorAdvertise, showAdvertise);
+  updateSpecificButton(querySelectorTools, showTools);
 }
 
 // * Dynamically handle parent and update visibility
-function updateSpecificButton(selector, shouldHide) {
-  const button = document.querySelector(selector);
-  if (button) {
-    let parentDiv = button.parentElement;
-
-    // Update visibility dynamically
-    if (parentDiv) {
-      parentDiv.style.display = shouldHide ? 'none' : 'block';
+function updateSpecificButton(selector, shouldShow) {
+  const element = document.querySelector(selector);
+  if (element) {
+    // Find the first button parent
+    let currentElement = element;
+    while (currentElement.parentElement) {
+      if (currentElement.tagName.toLowerCase() === 'button') {
+        // Found the button parent, show/show its parent
+        if (currentElement.parentElement) {
+          currentElement.parentElement.style.display = shouldShow ? 'block' : 'none';
+        }
+        break;
+      }
+      currentElement = currentElement.parentElement;
     }
   }
 
-  // * Additional functionality to hide all <svg> elements with <circle fill="none"> when hideStatus is true
+  // * Additional functionality to show all <svg> elements with <circle fill="none"> when showStatus is true
   if (selector === querySelectorStatus) {
     const svgElements = document.querySelectorAll(querySelectorStatusChatCircles);
     svgElements.forEach(circle => {
       const svgElement = circle.parentElement;
       if (svgElement) {
-        svgElement.style.display = shouldHide ? 'none' : 'block';
+        svgElement.style.display = shouldShow ? 'block' : 'none';
       }
     });
   }
