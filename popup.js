@@ -16,13 +16,13 @@ function updateButtonStyle(element, isActive) {
 }
 
 // * Load settings from storage and set toggles accordingly
-browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMeta', 'hideAdvertise', 'hideTools'], (result) => {
-  toggleStatus.checked = result.hideStatus ?? true;
-  toggleChannels.checked = result.hideChannels ?? true;
-  toggleCommunity.checked = result.hideCommunity ?? true;
-  toggleMeta.checked = result.hideMeta ?? true;
-  toggleAdvertise.checked = result.hideAdvertise ?? false;
-  toggleTools.checked = result.hideTools ?? false;
+browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMeta', 'showAdvertise', 'showTools'], (result) => {
+  toggleStatus.checked = result.showStatus ?? !result.hideStatus ?? false;
+  toggleChannels.checked = result.showChannels ?? !result.hideChannels ?? false;
+  toggleCommunity.checked = result.showCommunity ?? !result.hideCommunity ?? false;
+  toggleMeta.checked = result.showMeta ?? !result.hideMeta ?? false;
+  toggleAdvertise.checked = result.showAdvertise ?? true;
+  toggleTools.checked = result.showTools ?? true;
 
   // Update initial button styles
   updateButtonStyle(toggleStatus, toggleStatus.checked);
@@ -35,45 +35,45 @@ browser.storage.sync.get(['hideStatus', 'hideChannels', 'hideCommunity', 'hideMe
 
 // * Update storage and notify the content script when toggles change
 toggleStatus.addEventListener('change', () => {
-  const shouldHideStatus = toggleStatus.checked;
-  browser.storage.sync.set({ hideStatus: shouldHideStatus });
-  notifyContentScript({ action: 'toggleStatus', hide: shouldHideStatus });
-  updateButtonStyle(toggleStatus, shouldHideStatus);
+  const shouldShowStatus = toggleStatus.checked;
+  browser.storage.sync.set({ showStatus: shouldShowStatus });
+  notifyContentScript({ action: 'toggleStatus', show: shouldShowStatus });
+  updateButtonStyle(toggleStatus, shouldShowStatus);
 });
 
 toggleChannels.addEventListener('change', () => {
-  const shouldHideChannels = toggleChannels.checked;
-  browser.storage.sync.set({ hideChannels: shouldHideChannels });
-  notifyContentScript({ action: 'toggleChannels', hide: shouldHideChannels });
-  updateButtonStyle(toggleChannels, shouldHideChannels);
+  const shouldShowChannels = toggleChannels.checked;
+  browser.storage.sync.set({ showChannels: shouldShowChannels });
+  notifyContentScript({ action: 'toggleChannels', show: shouldShowChannels });
+  updateButtonStyle(toggleChannels, shouldShowChannels);
 });
 
 toggleCommunity.addEventListener('change', () => {
-  const shouldHideCommunity = toggleCommunity.checked;
-  browser.storage.sync.set({ hideCommunity: shouldHideCommunity });
-  notifyContentScript({ action: 'toggleCommunity', hide: shouldHideCommunity });
-  updateButtonStyle(toggleCommunity, shouldHideCommunity);
+  const shouldShowCommunity = toggleCommunity.checked;
+  browser.storage.sync.set({ showCommunity: shouldShowCommunity });
+  notifyContentScript({ action: 'toggleCommunity', show: shouldShowCommunity });
+  updateButtonStyle(toggleCommunity, shouldShowCommunity);
 });
 
 toggleMeta.addEventListener('change', () => {
-  const shouldHideMeta = toggleMeta.checked;
-  browser.storage.sync.set({ hideMeta: shouldHideMeta });
-  notifyContentScript({ action: 'toggleMeta', hide: shouldHideMeta });
-  updateButtonStyle(toggleMeta, shouldHideMeta);
+  const shouldShowMeta = toggleMeta.checked;
+  browser.storage.sync.set({ showMeta: shouldShowMeta });
+  notifyContentScript({ action: 'toggleMeta', show: shouldShowMeta });
+  updateButtonStyle(toggleMeta, shouldShowMeta);
 });
 
 toggleAdvertise.addEventListener('change', () => {
-  const shouldHideAdvertise = toggleAdvertise.checked;
-  browser.storage.sync.set({ hideAdvertise: shouldHideAdvertise });
-  notifyContentScript({ action: 'toggleAdvertise', hide: shouldHideAdvertise });
-  updateButtonStyle(toggleAdvertise, shouldHideAdvertise);
+  const shouldShowAdvertise = toggleAdvertise.checked;
+  browser.storage.sync.set({ showAdvertise: shouldShowAdvertise });
+  notifyContentScript({ action: 'toggleAdvertise', show: shouldShowAdvertise });
+  updateButtonStyle(toggleAdvertise, shouldShowAdvertise);
 });
 
 toggleTools.addEventListener('change', () => {
-  const shouldHideTools = toggleTools.checked;
-  browser.storage.sync.set({ hideTools: shouldHideTools });
-  notifyContentScript({ action: 'toggleTools', hide: shouldHideTools });
-  updateButtonStyle(toggleTools, shouldHideTools);
+  const shouldShowTools = toggleTools.checked;
+  browser.storage.sync.set({ showTools: shouldShowTools });
+  notifyContentScript({ action: 'toggleTools', show: shouldShowTools });
+  updateButtonStyle(toggleTools, shouldShowTools);
 });
 
 // * Function to send messages to the content script
