@@ -8,8 +8,8 @@ const querySelectorChannels = 'span[data-icon="newsletter-outline"]';
 const querySelectorCommunity = 'span[data-icon="community-outline"]';
 const querySelectorCommunityNew = 'span[data-icon="community-refreshed-32"]';
 const querySelectorMeta = 'button[aria-label="Meta AI"]';
-const querySelectorAdvertise = 'span[data-icon="business-advertise-outline"]';
-const querySelectorTools = 'span[data-icon="business-tools-outline"]';
+const querySelectorAdvertise = 'span[data-icon="megaphone-refreshed-32"]';
+const querySelectorTools = 'span[data-icon="storefront"]';
 
 // * Load settings
 // * Temporary fix for migrating from the previous version
