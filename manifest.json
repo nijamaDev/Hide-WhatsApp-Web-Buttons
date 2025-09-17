@@ -22,5 +22,15 @@
       "128": "/Icons/icon-128.png"
     }
   },
-  "permissions": ["storage"]
+  "permissions": ["storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{ea7cb967-a5b1-409d-bfd3-ef455e85a0a2}",
+      "strict_min_version": "109.0"
+    }
+  }
 }
