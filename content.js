@@ -87,20 +87,33 @@ function updateButtonVisibility(showStatus, showChannels, showCommunity, showMet
 
 // * Dynamically handle parent and update visibility
 function updateSpecificButton(selector, shouldShow) {
+  // Find the starting element based on the selector
   const element = document.querySelector(selector);
-  if (element) {
-    // Find the first button parent
-    let currentElement = element;
-    while (currentElement.parentElement) {
-      if (currentElement.tagName.toLowerCase() === 'button') {
-        // Found the button parent, show/show its parent
-        if (currentElement.parentElement) {
-          currentElement.parentElement.style.display = shouldShow ? 'block' : 'none';
+  if (!element) {
+    return;
+  }
+
+  let currentElement = element;
+  // Traverse up the DOM tree from the starting element
+  while (currentElement.parentElement) {
+    // Check if the current element in the traversal is a button
+    if (currentElement.tagName.toLowerCase() === 'button') {
+      const buttonParent = currentElement.parentElement;
+
+      if (buttonParent) {
+        let elementToToggle = buttonParent;
+        // Check if the button's parent is a <span> and has its own parent
+        if (buttonParent.tagName.toLowerCase() === 'span' && buttonParent.parentElement) {
+          // If it's a <span>, target its parent (the grandparent of the button)
+          elementToToggle = buttonParent.parentElement;
         }
-        break;
+        // Apply the display style to the determined element
+        elementToToggle.style.display = shouldShow ? 'block' : 'none';
       }
-      currentElement = currentElement.parentElement;
+      break;
     }
+    // Move up to the next parent
+    currentElement = currentElement.parentElement;
   }
 
   // * Additional functionality to show all <svg> elements with <circle fill="none"> when showStatus is true
