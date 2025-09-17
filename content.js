@@ -8,8 +8,10 @@ const querySelectorChannels = 'span[data-icon="newsletter-outline"]';
 const querySelectorCommunity = 'span[data-icon="community-outline"]';
 const querySelectorCommunityNew = 'span[data-icon="community-refreshed-32"]';
 const querySelectorMeta = 'button[aria-label="Meta AI"]';
-const querySelectorAdvertise = 'span[data-icon="megaphone-refreshed-32"]';
-const querySelectorTools = 'span[data-icon="storefront"]';
+const querySelectorAdvertise = 'span[data-icon="business-advertise-outline"]';
+const querySelectorAdvertiseNew = 'span[data-icon="megaphone-refreshed-32"]';
+const querySelectorTools = 'span[data-icon="business-tools-outline"]';
+const querySelectorToolsNew = 'span[data-icon="storefront"]';
 
 // * Load settings
 // * Temporary fix for migrating from the previous version
@@ -59,10 +61,12 @@ browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMe
     if (message.action === 'toggleAdvertise') {
       showAdvertise = message.show;
       updateSpecificButton(querySelectorAdvertise, showAdvertise);
+      updateSpecificButton(querySelectorAdvertiseNew, showAdvertise);
     }
     if (message.action === 'toggleTools') {
       showTools = message.show;
       updateSpecificButton(querySelectorTools, showTools);
+      updateSpecificButton(querySelectorToolsNew, showTools);
     }
   });
 });
@@ -76,7 +80,9 @@ function updateButtonVisibility(showStatus, showChannels, showCommunity, showMet
   updateSpecificButton(querySelectorCommunityNew, showCommunity);
   updateSpecificButton(querySelectorMeta, showMeta);
   updateSpecificButton(querySelectorAdvertise, showAdvertise);
+  updateSpecificButton(querySelectorAdvertiseNew, showAdvertise);
   updateSpecificButton(querySelectorTools, showTools);
+  updateSpecificButton(querySelectorToolsNew, showTools);
 }
 
 // * Dynamically handle parent and update visibility
