@@ -139,7 +139,7 @@ function updateSpecificButton(query, shouldShow) {
   }
 
   // * Additional functionality to show all <svg> elements with <circle fill="none"> when showStatus is true
-  if (query === queryStatus) {
+  if (query == queryStatus || query == queryStatusNew) {
     const svgElements = document.querySelectorAll(queryStatusChatCircles);
     svgElements.forEach(circle => {
       const svgElement = circle.parentElement;
