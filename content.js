@@ -1,21 +1,24 @@
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
-const querySelectorStatus = 'span[data-icon="status-outline"]';
-const querySelectorStatusNew = 'span[data-icon="status-refreshed"]';
-const querySelectorStatusChatCircles = 'svg > circle[fill="none"]';
-const querySelectorChannels = 'span[data-icon="newsletter-outline"]';
-const querySelectorCommunity = 'span[data-icon="community-outline"]';
-const querySelectorCommunityNew = 'span[data-icon="community-refreshed-32"]';
-const querySelectorMeta = 'button[aria-label="Meta AI"]';
-const querySelectorAdvertise = 'span[data-icon="business-advertise-outline"]';
-const querySelectorAdvertiseNew = 'span[data-icon="megaphone-refreshed-32"]';
-const querySelectorTools = 'span[data-icon="business-tools-outline"]';
-const querySelectorToolsNew = 'span[data-icon="storefront"]';
+const queryStatus = 'span[data-icon="status-outline"]';
+const queryStatusNew = 'span[data-icon="status-refreshed"]';
+const queryStatusChatCircles = 'svg > circle[fill="none"]';
+const queryChannels = 'span[data-icon="newsletter-outline"]';
+const queryCommunity = 'span[data-icon="community-outline"]';
+const queryCommunityNew = 'span[data-icon="community-refreshed-32"]';
+const queryMeta = 'button[aria-label="Meta AI"]';
+const queryAdvertise = 'span[data-icon="business-advertise-outline"]';
+const queryAdvertiseNew = 'span[data-icon="megaphone-refreshed-32"]';
+const queryTools = 'span[data-icon="business-tools-outline"]';
+const queryToolsNew = 'span[data-icon="storefront"]';
 
 // * Load settings
-// * Temporary fix for migrating from the previous version
 browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMeta', 'showAdvertise', 'showTools'], (result) => {
+  if (browser.runtime.lastError) {
+    console.error(`Error retrieving settings: ${browser.runtime.lastError}`);
+    return;
+  }
   let showStatus = result.showStatus ?? false;
   let showChannels = result.showChannels ?? false;
   let showCommunity = result.showCommunity ?? false;
@@ -23,16 +26,35 @@ browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMe
   let showAdvertise = result.showAdvertise ?? true;
   let showTools = result.showTools ?? true;
 
+  browser.storage.sync.set({ 
+    showStatus,
+    showChannels,
+    showCommunity,
+    showMeta,
+    showAdvertise,
+    showTools
+  });
   // * Observer to handle dynamic DOM changes
-  let observer = new MutationObserver(() => {
-    updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools);
+  let observer = new MutationObserver((mutations) => {
+    let areNodesAdded = false;
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes) areNodesAdded = true;
+    });
+    if (areNodesAdded) {
+      updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools);
+    }
   });
 
-  observer.observe(document.body, {
+  let appNode = document.getElementById('app');
+  if (!appNode) {
+    appNode = document.body;
+  }
+
+  observer.observe(appNode, {
     childList: true,
-    subtree: true, // Watch deeply for changes
+    subtree: true,
     attributes: false,
-    characterData: false,
+    characterData: false
   });
 
   // * Initial visibility update
@@ -42,53 +64,53 @@ browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMe
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
       showStatus = message.show;
-      updateSpecificButton(querySelectorStatus, showStatus);
-      updateSpecificButton(querySelectorStatusNew, showStatus);
+      updateSpecificButton(queryStatus, showStatus);
+      updateSpecificButton(queryStatusNew, showStatus);
     }
     if (message.action === 'toggleChannels') {
       showChannels = message.show;
-      updateSpecificButton(querySelectorChannels, showChannels);
+      updateSpecificButton(queryChannels, showChannels);
     }
     if (message.action === 'toggleCommunity') {
       showCommunity = message.show;
-      updateSpecificButton(querySelectorCommunity, showCommunity);
-      updateSpecificButton(querySelectorCommunityNew, showCommunity);
+      updateSpecificButton(queryCommunity, showCommunity);
+      updateSpecificButton(queryCommunityNew, showCommunity);
     }
     if (message.action === 'toggleMeta') {
       showMeta = message.show;
-      updateSpecificButton(querySelectorMeta, showMeta);
+      updateSpecificButton(queryMeta, showMeta);
     }
     if (message.action === 'toggleAdvertise') {
       showAdvertise = message.show;
-      updateSpecificButton(querySelectorAdvertise, showAdvertise);
-      updateSpecificButton(querySelectorAdvertiseNew, showAdvertise);
+      updateSpecificButton(queryAdvertise, showAdvertise);
+      updateSpecificButton(queryAdvertiseNew, showAdvertise);
     }
     if (message.action === 'toggleTools') {
       showTools = message.show;
-      updateSpecificButton(querySelectorTools, showTools);
-      updateSpecificButton(querySelectorToolsNew, showTools);
+      updateSpecificButton(queryTools, showTools);
+      updateSpecificButton(queryToolsNew, showTools);
     }
   });
 });
 
 // * Update the visibility of all buttons
 function updateButtonVisibility(showStatus, showChannels, showCommunity, showMeta, showAdvertise, showTools) {
-  updateSpecificButton(querySelectorStatus, showStatus);
-  updateSpecificButton(querySelectorStatusNew, showStatus);
-  updateSpecificButton(querySelectorChannels, showChannels);
-  updateSpecificButton(querySelectorCommunity, showCommunity);
-  updateSpecificButton(querySelectorCommunityNew, showCommunity);
-  updateSpecificButton(querySelectorMeta, showMeta);
-  updateSpecificButton(querySelectorAdvertise, showAdvertise);
-  updateSpecificButton(querySelectorAdvertiseNew, showAdvertise);
-  updateSpecificButton(querySelectorTools, showTools);
-  updateSpecificButton(querySelectorToolsNew, showTools);
+  updateSpecificButton(queryStatus, showStatus);
+  updateSpecificButton(queryStatusNew, showStatus);
+  updateSpecificButton(queryChannels, showChannels);
+  updateSpecificButton(queryCommunity, showCommunity);
+  updateSpecificButton(queryCommunityNew, showCommunity);
+  updateSpecificButton(queryMeta, showMeta);
+  updateSpecificButton(queryAdvertise, showAdvertise);
+  updateSpecificButton(queryAdvertiseNew, showAdvertise);
+  updateSpecificButton(queryTools, showTools);
+  updateSpecificButton(queryToolsNew, showTools);
 }
 
 // * Dynamically handle parent and update visibility
-function updateSpecificButton(selector, shouldShow) {
+function updateSpecificButton(query, shouldShow) {
   // Find the starting element based on the selector
-  const element = document.querySelector(selector);
+  const element = document.querySelector(query);
   if (!element) {
     return;
   }
@@ -117,8 +139,8 @@ function updateSpecificButton(selector, shouldShow) {
   }
 
   // * Additional functionality to show all <svg> elements with <circle fill="none"> when showStatus is true
-  if (selector === querySelectorStatus) {
-    const svgElements = document.querySelectorAll(querySelectorStatusChatCircles);
+  if (query === queryStatus) {
+    const svgElements = document.querySelectorAll(queryStatusChatCircles);
     svgElements.forEach(circle => {
       const svgElement = circle.parentElement;
       if (svgElement) {

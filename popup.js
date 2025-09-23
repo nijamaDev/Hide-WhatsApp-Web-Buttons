@@ -17,14 +17,30 @@ function updateButtonStyle(element, isActive) {
 
 // * Load settings from storage and set toggles accordingly
 browser.storage.sync.get(['showStatus', 'showChannels', 'showCommunity', 'showMeta', 'showAdvertise', 'showTools'], (result) => {
-  toggleStatus.checked = result.showStatus ?? !result.hideStatus ?? false;
-  toggleChannels.checked = result.showChannels ?? !result.hideChannels ?? false;
-  toggleCommunity.checked = result.showCommunity ?? !result.hideCommunity ?? false;
-  toggleMeta.checked = result.showMeta ?? !result.hideMeta ?? false;
+  if (browser.runtime.lastError) {
+    console.error(`Error retrieving settings: ${browser.runtime.lastError}`);
+    return;
+  }
+  toggleStatus.checked    = result.showStatus    ?? false;
+  toggleChannels.checked  = result.showChannels  ?? false;
+  toggleCommunity.checked = result.showCommunity ?? false;
+  toggleMeta.checked      = result.showMeta      ?? false;
   toggleAdvertise.checked = result.showAdvertise ?? true;
-  toggleTools.checked = result.showTools ?? true;
+  toggleTools.checked     = result.showTools     ?? true;
 
-  // Update initial button styles
+  // Update initial button styles and set storage defaults if not set
+  if (!result.showStatus) browser.storage.sync.set(
+    { showStatus: toggleStatus.checked });
+  if (!result.showChannels) browser.storage.sync.set(
+    { showChannels: toggleChannels.checked });
+  if (!result.showCommunity) browser.storage.sync.set(
+    { showCommunity: toggleCommunity.checked });
+  if (!result.showMeta) browser.storage.sync.set(
+    { showMeta: toggleMeta.checked });
+  if (!result.showAdvertise) browser.storage.sync.set(
+    { showAdvertise: toggleAdvertise.checked });
+  if (!result.showTools) browser.storage.sync.set(
+    { showTools: toggleTools.checked });
   updateButtonStyle(toggleStatus, toggleStatus.checked);
   updateButtonStyle(toggleChannels, toggleChannels.checked);
   updateButtonStyle(toggleCommunity, toggleCommunity.checked);
