@@ -13,14 +13,6 @@ const queryAdvertiseNew = 'span[data-icon="megaphone-refreshed-32"]';
 const queryTools =        'span[data-icon="business-tools-outline"]';
 const queryToolsNew =     'span[data-icon="storefront"]';
 
-  /* browser.storage.sync.set({ // Testing purposes only
-    showStatus: false,
-    showChannels: false,
-    showCommunity: false,
-    showMeta: false,
-    showAdvertise: true,
-    showTools: true
-  }); */
 // * Load settings
 browser.storage.sync.get(
   [
@@ -29,24 +21,18 @@ browser.storage.sync.get(
     'hideCommunity',
     'hideMeta',
     'hideAdvertise',
-    'hideTools',
-    'showStatus',
-    'showChannels',
-    'showCommunity',
-    'showMeta',
-    'showAdvertise',
-    'showTools'
+    'hideTools'
   ], (result) => {
   if (browser.runtime.lastError) {
     console.error(`Error retrieving settings: ${browser.runtime.lastError}`);
     return;
   }
-  let hideStatus    = result.hideStatus    ?? !(result.showStatus    ?? false);
-  let hideChannels  = result.hideChannels  ?? !(result.showChannels  ?? false);
-  let hideCommunity = result.hideCommunity ?? !(result.showCommunity ?? false);
-  let hideMeta      = result.hideMeta      ?? !(result.showMeta      ?? false);
-  let hideAdvertise = result.hideAdvertise ?? !(result.showAdvertise ?? true);
-  let hideTools     = result.hideTools     ?? !(result.showTools     ?? true);
+  let hideStatus    = result.hideStatus    ?? true;
+  let hideChannels  = result.hideChannels  ?? true;
+  let hideCommunity = result.hideCommunity ?? true;
+  let hideMeta      = result.hideMeta      ?? true;
+  let hideAdvertise = result.hideAdvertise ?? false;
+  let hideTools     = result.hideTools     ?? false;
 
   browser.storage.sync.set({ 
     hideStatus,
