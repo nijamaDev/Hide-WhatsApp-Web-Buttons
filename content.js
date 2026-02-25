@@ -1,6 +1,10 @@
 if (typeof browser === "undefined") {
   var browser = chrome;
 }
+const titleStatus =       'status-refreshed';
+const titleChannels =     'wds-ic-channels';
+const titleCommunity =    'community-refreshed-32';
+
 const queryStatus =       'span[data-icon="status-outline"]';
 const queryStatusNew =    'span[data-icon="status-refreshed"]';
 const queryStatusChatCircles = 'svg > circle[fill="none"]';
@@ -86,17 +90,17 @@ browser.storage.sync.get(
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === 'toggleStatus') {
       hideStatus = message.state;
-      updateSpecificButton(hideStatus, queryStatus);
-      updateSpecificButton(hideStatus, queryStatusNew);
+      updateSpecificButton(hideStatus, queryStatus, titleStatus);
+      updateSpecificButton(hideStatus, queryStatusNew, titleStatus);
     }
     if (message.action === 'toggleChannels') {
       hideChannels = message.state;
-      updateSpecificButton(hideChannels, queryChannels);
+      updateSpecificButton(hideChannels, queryChannels, titleChannels);
     }
     if (message.action === 'toggleCommunity') {
       hideCommunity = message.state;
-      updateSpecificButton(hideCommunity, queryCommunity);
-      updateSpecificButton(hideCommunity, queryCommunityNew);
+      updateSpecificButton(hideCommunity, queryCommunity, titleCommunity);
+      updateSpecificButton(hideCommunity, queryCommunityNew, titleCommunity);
     }
     if (message.action === 'toggleMeta') {
       hideMeta = message.state;
@@ -124,11 +128,11 @@ function updateButtonVisibility(
   hideAdvertise,
   hideTools
 ) {
-  updateSpecificButton(hideStatus,    queryStatus);
-  updateSpecificButton(hideStatus,    queryStatusNew);
-  updateSpecificButton(hideChannels,  queryChannels);
-  updateSpecificButton(hideCommunity, queryCommunity);
-  updateSpecificButton(hideCommunity, queryCommunityNew);
+  updateSpecificButton(hideStatus,    queryStatus, titleStatus);
+  updateSpecificButton(hideStatus,    queryStatusNew, titleStatus);
+  updateSpecificButton(hideChannels,  queryChannels, titleChannels);
+  updateSpecificButton(hideCommunity, queryCommunity, titleCommunity);
+  updateSpecificButton(hideCommunity, queryCommunityNew, titleCommunity);
   updateSpecificButton(hideMeta,      queryMeta);
   updateSpecificButton(hideAdvertise, queryAdvertise);
   updateSpecificButton(hideAdvertise, queryAdvertiseNew);
@@ -137,9 +141,25 @@ function updateButtonVisibility(
 }
 
 // * Dynamically handle parent and update visibility
-function updateSpecificButton(shouldHide, query) {
-  // Find the starting element based on the selector
-  const element = document.querySelector(query);
+function updateSpecificButton(shouldHide, query, titleText = null) {
+  let element = null;
+
+  // Primary: Try to find by titleText if provided
+  if (titleText) {
+    const svgTitles = Array.from(document.querySelectorAll('svg title'));
+    const titleNode = svgTitles.find(t => t.textContent === titleText);
+    
+    // The <svg> is a child of the span that was previously used as the starting element
+    if (titleNode && titleNode.parentElement && titleNode.parentElement.parentElement) {
+      element = titleNode.parentElement.parentElement;
+    }
+  }
+
+  // Fallback: Use the original query if title is not found or not provided
+  if (!element && query) {
+    element = document.querySelector(query);
+  }
+
   if (!element) {
     return;
   }
