@@ -4,6 +4,10 @@ if (typeof browser === "undefined") {
 const titleStatus =       'status-refreshed';
 const titleChannels =     'wds-ic-channels';
 const titleCommunity =    'community-refreshed-32';
+const titleEmojis =       'ic-mood';
+const titleGifs =         'gif-refreshed-new';
+const titleStickers =     'wds-ic-sticker';
+const titleEGS =       'wds-ic-sticker-smiley';
 
 const queryStatus =       'span[data-icon="status-outline"]';
 const queryStatusNew =    'span[data-icon="status-refreshed"]';
@@ -25,7 +29,10 @@ browser.storage.sync.get(
     'hideCommunity',
     'hideMeta',
     'hideAdvertise',
-    'hideTools'
+    'hideTools',
+    'hideEmojis',
+    'hideGifs',
+    'hideStickers'
   ], (result) => {
   if (browser.runtime.lastError) {
     console.error(`Error retrieving settings: ${browser.runtime.lastError}`);
@@ -35,6 +42,9 @@ browser.storage.sync.get(
   let hideChannels  = result.hideChannels  ?? true;
   let hideCommunity = result.hideCommunity ?? true;
   let hideMeta      = result.hideMeta      ?? true;
+  let hideEmojis    = result.hideEmojis    ?? false;
+  let hideGifs      = result.hideGifs      ?? false;
+  let hideStickers  = result.hideStickers  ?? false;
   let hideAdvertise = result.hideAdvertise ?? false;
   let hideTools     = result.hideTools     ?? false;
 
@@ -44,7 +54,10 @@ browser.storage.sync.get(
     hideCommunity,
     hideMeta,
     hideAdvertise,
-    hideTools
+    hideTools,
+    hideEmojis,
+    hideGifs,
+    hideStickers
   });
   // * Observer to handle dynamic DOM changes
   let observer = new MutationObserver((mutations) => {
@@ -59,7 +72,10 @@ browser.storage.sync.get(
         hideCommunity,
         hideMeta,
         hideAdvertise,
-        hideTools
+        hideTools,
+        hideEmojis,
+        hideGifs,
+        hideStickers
       );
     }
   });
@@ -83,7 +99,10 @@ browser.storage.sync.get(
     hideCommunity,
     hideMeta,
     hideAdvertise,
-    hideTools
+    hideTools,
+    hideEmojis,
+    hideGifs,
+    hideStickers
   );
 
   // * Listen for messages from the popup and adjust behavior
@@ -116,6 +135,21 @@ browser.storage.sync.get(
       updateSpecificButton(hideTools, queryTools);
       updateSpecificButton(hideTools, queryToolsNew);
     }
+    if (message.action === 'toggleEmojis') {
+      hideEmojis = message.state;
+      updateSpecificButton(hideEmojis, null, titleEmojis);
+      updateSpecificButton(hideEmojis && hideGifs && hideStickers, null, titleEGS);
+    }
+    if (message.action === 'toggleGifs') {
+      hideGifs = message.state;
+      updateSpecificButton(hideGifs, null, titleGifs);
+      updateSpecificButton(hideEmojis && hideGifs && hideStickers, null, titleEGS);
+    }
+    if (message.action === 'toggleStickers') {
+      hideStickers = message.state;
+      updateSpecificButton(hideStickers, null, titleStickers);
+      updateSpecificButton(hideEmojis && hideGifs && hideStickers, null, titleEGS);
+    }
   });
 });
 
@@ -126,7 +160,10 @@ function updateButtonVisibility(
   hideCommunity,
   hideMeta,
   hideAdvertise,
-  hideTools
+  hideTools,
+  hideEmojis,
+  hideGifs,
+  hideStickers
 ) {
   updateSpecificButton(hideStatus,    queryStatus, titleStatus);
   updateSpecificButton(hideStatus,    queryStatusNew, titleStatus);
@@ -138,6 +175,12 @@ function updateButtonVisibility(
   updateSpecificButton(hideAdvertise, queryAdvertiseNew);
   updateSpecificButton(hideTools,     queryTools);
   updateSpecificButton(hideTools,     queryToolsNew);
+  updateSpecificButton(hideEmojis,    null, titleEmojis);
+  updateSpecificButton(hideGifs,      null, titleGifs);
+  updateSpecificButton(hideStickers,  null, titleStickers);
+  
+  const hideEGS = hideEmojis && hideGifs && hideStickers;
+  updateSpecificButton(hideEGS, null, titleEGS);
 }
 
 // * Dynamically handle parent and update visibility
@@ -178,8 +221,14 @@ function updateSpecificButton(shouldHide, query, titleText = null) {
           // If it's a <span>, target its parent (the grandparent of the button)
           elementToToggle = buttonParent.parentElement;
         }
+
+        // The EGS button has an extra wrapper div. We can simply go one level higher if needed.
+        if (titleText === titleEGS && elementToToggle.parentElement) {
+          elementToToggle = elementToToggle.parentElement;
+        }
+
         // Apply the display style to the determined element
-        elementToToggle.style.display = shouldHide ? 'none' : 'block';
+        elementToToggle.style.display = shouldHide ? 'none' : 'flex';
       }
       break;
     }
@@ -193,7 +242,7 @@ function updateSpecificButton(shouldHide, query, titleText = null) {
     svgElements.forEach(circle => {
       const svgElement = circle.parentElement;
       if (svgElement) {
-        svgElement.style.display = shouldHide ? 'none' : 'block';
+        svgElement.style.display = shouldHide ? 'none' : 'flex';
       }
     });
   }
