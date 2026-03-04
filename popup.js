@@ -62,7 +62,7 @@ SETTINGS_CONFIG.forEach(setting => {
   toggleElement.addEventListener('change', () => {
     const isChecked = toggleElement.checked;
     updateButtonStyle(toggleElement, isChecked);
-    notifyContentScript({ action: `toggle${setting.key.replace('hide', '')}`, state: isChecked });
+    notifyContentScript({ action: setting.key, state: isChecked });
     browser.storage.sync.set({ [setting.key]: isChecked });
   });
 });
