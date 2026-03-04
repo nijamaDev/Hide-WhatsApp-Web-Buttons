@@ -60,23 +60,28 @@ browser.storage.sync.get(
     hideStickers
   });
   // * Observer to handle dynamic DOM changes
+  let debounceTimer;
   let observer = new MutationObserver((mutations) => {
     let areNodesAdded = false;
     mutations.forEach((mutation) => {
-      if (mutation.addedNodes) areNodesAdded = true;
+      if (mutation.addedNodes.length > 0) areNodesAdded = true;
     });
+
     if (areNodesAdded) {
-      updateButtonVisibility(
-        hideStatus,
-        hideChannels,
-        hideCommunity,
-        hideMeta,
-        hideAdvertise,
-        hideTools,
-        hideEmojis,
-        hideGifs,
-        hideStickers
-      );
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        updateButtonVisibility(
+          hideStatus,
+          hideChannels,
+          hideCommunity,
+          hideMeta,
+          hideAdvertise,
+          hideTools,
+          hideEmojis,
+          hideGifs,
+          hideStickers
+        );
+      }, 100);
     }
   });
 
