@@ -93,14 +93,20 @@ browser.storage.sync.get(storageKeys, (result) => {
   // * Initial visibility update
   updateAllButtons();
 
-  // * Listen for messages from the popup
-  browser.runtime.onMessage.addListener((message) => {
-    if (CONFIG[message.action]) {
-      currentSettings[message.action] = message.state;
-      updateSettingsGroup(message.action);
-
-      // Special handling for EGS group
-      if (['hideEmojis', 'hideGifs', 'hideStickers'].includes(message.action)) {
+  // * Listen for changes in storage to update visibility dynamically
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'sync') {
+      let needsEGSUpdate = false;
+      Object.keys(changes).forEach(key => {
+        if (CONFIG[key]) {
+          currentSettings[key] = changes[key].newValue;
+          updateSettingsGroup(key);
+          if (['hideEmojis', 'hideGifs', 'hideStickers'].includes(key)) {
+            needsEGSUpdate = true;
+          }
+        }
+      });
+      if (needsEGSUpdate) {
         updateEGSButton();
       }
     }

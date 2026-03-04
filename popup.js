@@ -19,15 +19,6 @@ function updateButtonStyle(element, isActive) {
   element.closest('.quick-setting').classList.toggle('active', isActive);
 }
 
-// * Function to send messages to the content script
-function notifyContentScript(message) {
-  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs[0]?.id) {
-      browser.tabs.sendMessage(tabs[0].id, message);
-    }
-  });
-}
-
 // * Load settings from storage and set toggles accordingly
 const storageKeys = SETTINGS_CONFIG.map(setting => setting.key);
 browser.storage.sync.get(storageKeys, (result) => {
@@ -62,7 +53,6 @@ SETTINGS_CONFIG.forEach(setting => {
   toggleElement.addEventListener('change', () => {
     const isChecked = toggleElement.checked;
     updateButtonStyle(toggleElement, isChecked);
-    notifyContentScript({ action: setting.key, state: isChecked });
     browser.storage.sync.set({ [setting.key]: isChecked });
   });
 });
