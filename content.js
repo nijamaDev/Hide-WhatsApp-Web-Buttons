@@ -77,10 +77,14 @@ browser.storage.sync.get(storageKeys, (result) => {
   }
 
   // * Observer to handle dynamic DOM changes
+  let debounceFrame;
   const observer = new MutationObserver((mutations) => {
     const areNodesAdded = mutations.some(mutation => mutation.addedNodes && mutation.addedNodes.length > 0);
     if (areNodesAdded) {
-      updateAllButtons();
+      if (debounceFrame) cancelAnimationFrame(debounceFrame);
+      debounceFrame = requestAnimationFrame(() => {
+        updateAllButtons();
+      });
     }
   });
 
