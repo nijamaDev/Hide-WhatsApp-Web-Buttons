@@ -31,6 +31,17 @@ class MockElement {
     this._selector = null;
     dom.elements.push(this);
   }
+
+  closest(selector) {
+    let el = this;
+    while (el) {
+      if (selector === 'button' && el.tagName === 'BUTTON') {
+        return el;
+      }
+      el = el.parentElement;
+    }
+    return null;
+  }
 }
 
 global.window = global;
