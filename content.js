@@ -171,24 +171,17 @@ function updateSpecificButton(shouldHide, query, titleText = null) {
 
   if (!element) return;
 
-  let currentElement = element;
-  while (currentElement.parentElement) {
-    if (currentElement.tagName.toLowerCase() === 'button') {
-      const buttonParent = currentElement.parentElement;
-      if (buttonParent) {
-        let elementToToggle = buttonParent;
-        if (buttonParent.tagName.toLowerCase() === 'span' && buttonParent.parentElement) {
-          elementToToggle = buttonParent.parentElement;
-        }
-
-        if (titleText === titleEGS && elementToToggle.parentElement) {
-          elementToToggle = elementToToggle.parentElement;
-        }
-
-        elementToToggle.style.display = shouldHide ? 'none' : 'flex';
-      }
-      break;
+  const button = element.closest('button');
+  if (button?.parentElement) {
+    let elementToToggle = button.parentElement;
+    if (elementToToggle.tagName.toLowerCase() === 'span' && elementToToggle.parentElement) {
+      elementToToggle = elementToToggle.parentElement;
     }
-    currentElement = currentElement.parentElement;
+
+    if (titleText === titleEGS && elementToToggle.parentElement) {
+      elementToToggle = elementToToggle.parentElement;
+    }
+
+    elementToToggle.style.display = shouldHide ? 'none' : 'flex';
   }
 }
