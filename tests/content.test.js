@@ -31,6 +31,16 @@ class MockElement {
     this._selector = null;
     dom.elements.push(this);
   }
+
+  closest(selector) {
+    if (selector === 'button' && this.tagName === 'BUTTON') return this;
+    let current = this.parentElement;
+    while (current) {
+      if (current.tagName === selector.toUpperCase()) return current;
+      current = current.parentElement;
+    }
+    return null;
+  }
 }
 
 global.window = global;
