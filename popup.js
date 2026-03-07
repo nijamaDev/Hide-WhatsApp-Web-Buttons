@@ -1,5 +1,5 @@
 if (typeof browser === "undefined") {
-  var browser = chrome;
+  globalThis.browser = chrome;
 }
 
 const SETTINGS_CONFIG = [
