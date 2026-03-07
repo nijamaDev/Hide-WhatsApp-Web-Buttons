@@ -101,39 +101,41 @@ browser.storage.sync.get(storageKeys, (result) => {
   browser.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync') {
       let needsEGSUpdate = false;
+      const svgTitles = Array.from(document.querySelectorAll('svg title'));
       Object.keys(changes).forEach(key => {
         if (CONFIG[key]) {
           currentSettings[key] = Boolean(changes[key].newValue);
-          updateSettingsGroup(key);
+          updateSettingsGroup(key, svgTitles);
           if (['hideEmojis', 'hideGifs', 'hideStickers'].includes(key)) {
             needsEGSUpdate = true;
           }
         }
       });
       if (needsEGSUpdate) {
-        updateEGSButton();
+        updateEGSButton(svgTitles);
       }
     }
   });
 });
 
 function updateAllButtons() {
+  const svgTitles = Array.from(document.querySelectorAll('svg title'));
   storageKeys.forEach(key => {
-    updateSettingsGroup(key);
+    updateSettingsGroup(key, svgTitles);
   });
-  updateEGSButton();
+  updateEGSButton(svgTitles);
 }
 
-function updateSettingsGroup(key) {
+function updateSettingsGroup(key, svgTitles) {
   const shouldHide = currentSettings[key];
   const config = CONFIG[key];
 
   config.selectors.forEach(selector => {
-    updateSpecificButton(shouldHide, selector);
+    updateSpecificButton(shouldHide, selector, null, svgTitles);
   });
 
   config.titles.forEach(title => {
-    updateSpecificButton(shouldHide, null, title);
+    updateSpecificButton(shouldHide, null, title, svgTitles);
   });
 
   // Additional functionality for Status chat circles
@@ -148,17 +150,17 @@ function updateSettingsGroup(key) {
   }
 }
 
-function updateEGSButton() {
+function updateEGSButton(svgTitles) {
   const shouldHideEGS = currentSettings.hideEmojis && currentSettings.hideGifs && currentSettings.hideStickers;
-  updateSpecificButton(shouldHideEGS, null, titleEGS);
+  updateSpecificButton(shouldHideEGS, null, titleEGS, svgTitles);
 }
 
 // * Dynamically handle parent and update visibility
-function updateSpecificButton(shouldHide, query, titleText = null) {
+function updateSpecificButton(shouldHide, query, titleText = null, cachedSvgTitles = null) {
   let element = null;
 
   if (titleText) {
-    const svgTitles = Array.from(document.querySelectorAll('svg title'));
+    const svgTitles = cachedSvgTitles || Array.from(document.querySelectorAll('svg title'));
     const titleNode = svgTitles.find(t => t.textContent === titleText);
     if (titleNode?.parentElement?.parentElement) {
       element = titleNode.parentElement.parentElement;
