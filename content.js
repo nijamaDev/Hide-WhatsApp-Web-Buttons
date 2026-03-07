@@ -66,7 +66,7 @@ browser.storage.sync.get(storageKeys, (result) => {
   const updatesToStorage = {};
   storageKeys.forEach(key => {
     const isSet = result[key] !== undefined;
-    currentSettings[key] = isSet ? result[key] : CONFIG[key].default;
+    currentSettings[key] = isSet ? Boolean(result[key]) : CONFIG[key].default;
     if (!isSet) {
       updatesToStorage[key] = currentSettings[key];
     }
@@ -103,7 +103,7 @@ browser.storage.sync.get(storageKeys, (result) => {
       let needsEGSUpdate = false;
       Object.keys(changes).forEach(key => {
         if (CONFIG[key]) {
-          currentSettings[key] = changes[key].newValue;
+          currentSettings[key] = Boolean(changes[key].newValue);
           updateSettingsGroup(key);
           if (['hideEmojis', 'hideGifs', 'hideStickers'].includes(key)) {
             needsEGSUpdate = true;
