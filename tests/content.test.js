@@ -31,6 +31,18 @@ class MockElement {
     this._selector = null;
     dom.elements.push(this);
   }
+
+  closest(selector) {
+    if (selector !== 'button') return null; // Simplified for tests
+    let current = this;
+    while (current) {
+      if (current.tagName === 'BUTTON') {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  }
 }
 
 global.window = global;
