@@ -16,8 +16,8 @@ fi
 echo "Extracting versions from manifest.json on branches 'main' and 'firefox'..."
 
 # Get versions from the respective branches
-VERSION_CHROME=$(git show main:manifest.json 2>/dev/null | grep -E '"version"\s*:' | awk -F'"' '{print $4}')
-VERSION_FIREFOX=$(git show firefox:manifest.json 2>/dev/null | grep -E '"version"\s*:' | awk -F'"' '{print $4}')
+VERSION_CHROME=$(git show main:manifest.json 2>/dev/null | jq -r .version)
+VERSION_FIREFOX=$(git show firefox:manifest.json 2>/dev/null | jq -r .version)
 
 if [ -z "$VERSION_CHROME" ]; then
     echo "Error: Could not find version in main:manifest.json or 'main' branch does not exist."
