@@ -31,6 +31,17 @@ class MockElement {
     this._selector = null;
     dom.elements.push(this);
   }
+
+  closest(selector) {
+    let current = this;
+    while (current) {
+      if (selector === current.tagName.toLowerCase() || selector === current._selector) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  }
 }
 
 global.window = global;
