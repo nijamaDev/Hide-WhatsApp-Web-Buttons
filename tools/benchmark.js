@@ -5,21 +5,24 @@ global.document = {
     return [{
       parentElement: {
         style: {}
-      }
+      },
+      closest: (s) => null
     }];
   },
   querySelector: (selector) => {
     return {
       tagName: 'div',
       parentElement: null,
-      style: {}
+      style: {},
+      closest: (s) => null
     };
   },
   getElementById: (id) => {
     return {
       tagName: 'div',
       parentElement: null,
-      style: {}
+      style: {},
+      closest: (s) => null
     };
   },
   body: {}
