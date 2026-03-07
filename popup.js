@@ -31,6 +31,8 @@ browser.storage.sync.get(storageKeys, (result) => {
 
   SETTINGS_CONFIG.forEach(setting => {
     const toggleElement = document.getElementById(setting.id);
+    if (!toggleElement) return;
+
     const isSet = result[setting.key] !== undefined;
     const value = isSet ? result[setting.key] : setting.default;
 
@@ -50,6 +52,8 @@ browser.storage.sync.get(storageKeys, (result) => {
 // * Update storage and notify the content script when toggles change
 SETTINGS_CONFIG.forEach(setting => {
   const toggleElement = document.getElementById(setting.id);
+  if (!toggleElement) return;
+
   toggleElement.addEventListener('change', () => {
     const isChecked = toggleElement.checked;
     updateButtonStyle(toggleElement, isChecked);
