@@ -77,12 +77,25 @@ browser.storage.sync.get(storageKeys, (result) => {
   }
 
   // * Observer to handle dynamic DOM changes
-  let debounceFrame;
+  let isUpdateScheduled = false;
   const observer = new MutationObserver((mutations) => {
-    const areNodesAdded = mutations.some(mutation => mutation.addedNodes && mutation.addedNodes.length > 0);
+    // Fast path - if an update is already scheduled, we can skip processing the mutation array entirely since we're going to update all buttons anyway
+    if (isUpdateScheduled) return;
+
+    // Use a standard for loop instead of Array.prototype.some()
+    // This avoids creating a closure function for every mutation batch
+    let areNodesAdded = false;
+    for (let i = 0; i < mutations.length; i++) {
+      if (mutations[i].addedNodes && mutations[i].addedNodes.length > 0) {
+        areNodesAdded = true;
+        break;
+      }
+    }
+
     if (areNodesAdded) {
-      if (debounceFrame) cancelAnimationFrame(debounceFrame);
-      debounceFrame = requestAnimationFrame(() => {
+      isUpdateScheduled = true;
+      requestAnimationFrame(() => {
+        isUpdateScheduled = false;
         updateAllButtons();
       });
     }
