@@ -78,26 +78,74 @@ browser.storage.sync.get(storageKeys, (result) => {
 
   // * Observer to handle dynamic DOM changes
   let isUpdateScheduled = false;
+  let isInitialLoad = true;
+
   const observer = new MutationObserver((mutations) => {
-    // Fast path - if an update is already scheduled, we can skip processing the mutation array entirely since we're going to update all buttons anyway
-    if (isUpdateScheduled) return;
+    if (isInitialLoad) {
+      if (isUpdateScheduled) return;
 
-    // Use a standard for loop instead of Array.prototype.some()
-    // This avoids creating a closure function for every mutation batch
-    let areNodesAdded = false;
-    for (let i = 0; i < mutations.length; i++) {
-      if (mutations[i].addedNodes && mutations[i].addedNodes.length > 0) {
-        areNodesAdded = true;
-        break;
+      let areNodesAdded = false;
+      for (let i = 0; i < mutations.length; i++) {
+        if (mutations[i].addedNodes && mutations[i].addedNodes.length > 0) {
+          areNodesAdded = true;
+          break;
+        }
       }
-    }
 
-    if (areNodesAdded) {
-      isUpdateScheduled = true;
-      requestAnimationFrame(() => {
-        isUpdateScheduled = false;
-        updateAllButtons();
-      });
+      if (areNodesAdded) {
+        isUpdateScheduled = true;
+        requestAnimationFrame(() => {
+          isUpdateScheduled = false;
+          updateAllButtons();
+
+          // Check if main UI elements are present to exit initial load phase
+          const mainElementLoaded = CONFIG.hideChannels.selectors.some(selector => document.querySelector(selector)) ||
+                                    CONFIG.hideCommunity.selectors.some(selector => document.querySelector(selector));
+          if (mainElementLoaded) {
+            isInitialLoad = false;
+          }
+        });
+      }
+    } else {
+      // Steady State: Check specifically for EGS or Status chat circles in addedNodes
+      for (let i = 0; i < mutations.length; i++) {
+        const addedNodes = mutations[i].addedNodes;
+        for (let j = 0; j < addedNodes.length; j++) {
+          const node = addedNodes[j];
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Check for EGS popup
+            const svgs = node.querySelectorAll ? node.querySelectorAll('svg title') : [];
+            for (let k = 0; k < svgs.length; k++) {
+              if (svgs[k].textContent === titleEGS) {
+                const shouldHideEGS = currentSettings.hideEmojis && currentSettings.hideGifs && currentSettings.hideStickers;
+                updateElementVisibility(svgs[k], shouldHideEGS, titleEGS);
+              }
+            }
+            if (node.tagName && node.tagName.toLowerCase() === 'svg') {
+              const title = node.querySelector('title');
+              if (title && title.textContent === titleEGS) {
+                const shouldHideEGS = currentSettings.hideEmojis && currentSettings.hideGifs && currentSettings.hideStickers;
+                updateElementVisibility(title, shouldHideEGS, titleEGS);
+              }
+            }
+
+            // Check for Status chat circles
+            if (currentSettings.hideStatus) {
+              const circles = node.querySelectorAll ? node.querySelectorAll(queryStatusChatCircles) : [];
+              for (let k = 0; k < circles.length; k++) {
+                const svgElement = circles[k].parentElement;
+                if (svgElement) {
+                  svgElement.style.display = 'none';
+                }
+              }
+              // If the added node is the circle itself
+              if (node.tagName && node.tagName.toLowerCase() === 'circle' && node.getAttribute('fill') === 'none' && node.parentElement && node.parentElement.tagName.toLowerCase() === 'svg') {
+                node.parentElement.style.display = 'none';
+              }
+            }
+          }
+        }
+      }
     }
   });
 
@@ -175,13 +223,34 @@ function updateSpecificButton(shouldHide, query, titleText = null, cachedSvgTitl
   if (titleText) {
     const svgTitles = cachedSvgTitles || Array.from(document.querySelectorAll('svg title'));
     const titleNode = svgTitles.find(t => t.textContent === titleText);
-    if (titleNode?.parentElement?.parentElement) {
-      element = titleNode.parentElement.parentElement;
+    if (titleNode) {
+      updateElementVisibility(titleNode, shouldHide, titleText);
+      return;
     }
   }
 
-  if (!element && query) {
+  if (query) {
     element = document.querySelector(query);
+  }
+
+  if (!element) return;
+
+  const button = element.closest('button');
+  if (button?.parentElement) {
+    let elementToToggle = button.parentElement;
+    if (elementToToggle.tagName.toLowerCase() === 'span' && elementToToggle.parentElement) {
+      elementToToggle = elementToToggle.parentElement;
+    }
+
+    elementToToggle.style.display = shouldHide ? 'none' : 'flex';
+  }
+}
+
+// * Helper to update visibility directly from a starting node (like a title node)
+function updateElementVisibility(startNode, shouldHide, titleText) {
+  let element = null;
+  if (startNode?.parentElement?.parentElement) {
+    element = startNode.parentElement.parentElement;
   }
 
   if (!element) return;
