@@ -15,7 +15,7 @@ const CONFIG = {
   },
   hideCommunity: {
     selectors: ['span[data-icon="community-outline"]', 'span[data-icon="community-refreshed-32"]'],
-    titles: ['community-refreshed-32'],
+    titles: ['community-refreshed-32', 'wds-ic-communities'],
     default: true
   },
   hideMeta: {
