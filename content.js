@@ -5,7 +5,7 @@ if (typeof browser === "undefined") {
 const CONFIG = {
   hideStatus: {
     selectors: ['span[data-icon="status-outline"]', 'span[data-icon="status-refreshed"]'],
-    titles: ['status-refreshed'],
+    titles: ['status-refreshed', 'wds-ic-status'],
     default: true
   },
   hideChannels: {
